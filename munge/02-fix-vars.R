@@ -10,6 +10,9 @@ escdata <- escdata %>%
       DMHFHIST == "No (now de Novo)" ~ "De novo",
       TRUE ~ str_remove(DMHFDUR, " months")
     ), levels = c("De novo", "< 6", "6-12", "> 12")),
+    DMHFHOSP = ynfac(case_when(is.na(DMHFHIST) ~ NA_real_, 
+                         DMHFHIST == "Yes, with previous hospitalization" ~ 1, 
+                         TRUE ~ 0)),
     bsa1 = sqrt(DMHEIGHT * DMWEIGHT / 3600),
     bsa2 = sqrt(DMHEIGHT * DCWEIGHT / 3600),
     OPLAVOLI = OPLAVOL / bsa1,
@@ -29,34 +32,34 @@ escdata <- escdata %>%
       MDACED_C == "Yes" | MDATD_C == "Yes" | MDARNID_C == "Yes" ~ 1,
       TRUE ~ 0
     )),
-    MDSGLT2H = case_when(
+    MDSGLT2H = ynfac(case_when(
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
       is.na(MDDIORH) ~ NA_real_,
       !is.na(MDDOSGH) ~ 1,
       TRUE ~ 0
-    ),
-    MDSGLT2D = case_when(
+    )),
+    MDSGLT2D = ynfac(case_when(
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
       is.na(MDDIORD) ~ NA_real_,
       !is.na(MDDOSGD) ~ 1,
       TRUE ~ 0
-    ),
-    MDGLP1H = case_when(
+    )),
+    MDGLP1H = ynfac(case_when(
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
       is.na(MDDIORH) ~ NA_real_,
       !is.na(MDDNOGLH) ~ 1,
       TRUE ~ 0
-    ),
-    MDGLP1D = case_when(
+    )),
+    MDGLP1D = ynfac(case_when(
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
       is.na(MDDIORD) ~ NA_real_,
       !is.na(MDDNOGLD) ~ 1,
       TRUE ~ 0
-    ),
+    )),
     all_vaso_na = if_all(all_of(c(
       "ITVASNO",
       "ITVASDOB",
@@ -85,7 +88,7 @@ escdata <- escdata %>%
     )),
     cvd_fu = case_when(
       is.na(death_fu) ~ NA_real_,
-      death_fu == 0 | F1DTHCSP %in% c("Non-cardiovascular cause", "Systemic haemorrhage") ~ 0,
+      death_fu == "No" | F1DTHCSP %in% c("Non-cardiovascular cause", "Systemic haemorrhage") ~ 0,
       TRUE ~ 1
     ),
     cvdhfh_fu = case_when(
