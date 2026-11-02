@@ -14,7 +14,7 @@ metaesc <- read.xlsx("./data/meta-data/metavars.xlsx")
 
 # Version number
 
-version <- "002"
+version <- "003"
 
 dir.create(paste0("./data/clean-data/v", version))
 
