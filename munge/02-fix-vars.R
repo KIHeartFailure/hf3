@@ -10,9 +10,11 @@ escdata <- escdata %>%
       DMHFHIST == "No (now de Novo)" ~ "De novo",
       TRUE ~ str_remove(DMHFDUR, " months")
     ), levels = c("De novo", "< 6", "6-12", "> 12")),
-    DMHFHOSP = ynfac(case_when(is.na(DMHFHIST) ~ NA_real_, 
-                         DMHFHIST == "Yes, with previous hospitalization" ~ 1, 
-                         TRUE ~ 0)),
+    DMHFHOSP = ynfac(case_when(
+      is.na(DMHFHIST) ~ NA_real_,
+      DMHFHIST == "Yes, with previous hospitalization" ~ 1,
+      TRUE ~ 0
+    )),
     bsa1 = sqrt(DMHEIGHT * DMWEIGHT / 3600),
     bsa2 = sqrt(DMHEIGHT * DCWEIGHT / 3600),
     OPLAVOLI = OPLAVOL / bsa1,
@@ -36,6 +38,7 @@ escdata <- escdata %>%
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
       is.na(MDDIORH) ~ NA_real_,
+      MDDIORH == "SGLT2 (or 2/1) inhibitor" ~ 1,
       !is.na(MDDOSGH) ~ 1,
       TRUE ~ 0
     )),
@@ -43,22 +46,23 @@ escdata <- escdata %>%
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
       is.na(MDDIORD) ~ NA_real_,
+      MDDIORD == "SGLT2 (or 2/1) inhibitor" ~ 1,
       !is.na(MDDOSGD) ~ 1,
       TRUE ~ 0
     )),
     MDGLP1H = ynfac(case_when(
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
-      is.na(MDDIORH) ~ NA_real_,
-      !is.na(MDDNOGLH) ~ 1,
-      TRUE ~ 0
+      is.na(MDDNOGLH) ~ NA_real_,
+      MDDNOGLH == "None" ~ 0,
+      TRUE ~ 1
     )),
     MDGLP1D = ynfac(case_when(
       is.na(MDNCV) ~ NA_real_,
       MDNCV == "No" ~ 0,
-      is.na(MDDIORD) ~ NA_real_,
-      !is.na(MDDNOGLD) ~ 1,
-      TRUE ~ 0
+      is.na(MDDNOGLD) ~ NA_real_,
+      MDDNOGLD == "None" ~ 0,
+      TRUE ~ 1
     )),
     all_vaso_na = if_all(all_of(c(
       "ITVASNO",
