@@ -78,22 +78,23 @@ escdata <- escdata %>%
     )), is.na),
 
     # Outcomes
+    startdtm = coalesce(DCDISCHDTD1, BASEDT, DMENROLDTD1),
+    enddtm = pmin(F1DEATHDTD1, F1CONTDTD1, na.rm = T),
+    time_death_fu = as.numeric(enddtm - startdtm),
     death_inhosp = ynfac(case_when(
-      DMVTYPE == "CHF" ~ NA_real_,
+      is.na(DMVTYPE) | DMVTYPE == "CHF" ~ NA_real_,
       DCVITAL == "Dead" ~ 1,
       DCVITAL == "Alive" | !is.na(F1VITAL) ~ 0
     )),
-    # fix that deaths after contact date
-    enddtm = pmin(F1DEATHDTD1, F1CONTDTD1, na.rm = T),
-    time_death_fu = as.numeric(enddtm - BASEDT),
     death_fu = ynfac(case_when(
       F1DEATHDTD1 > F1CONTDTD1 ~ 0,
-      TRUE ~ death_fup
+      F1VITAL == "Dead" ~ 1,
+      F1VITAL == "Alive" ~ 0
     )),
     cvd_fu = case_when(
       is.na(death_fu) ~ NA_real_,
       death_fu == "No" | F1DTHCSP %in% c("Non-cardiovascular cause", "Systemic haemorrhage") ~ 0,
-      TRUE ~ 1
+      TRUE ~ 1 # Unknown cause of death considered to be CVD
     ),
     cvdhfh_fu = case_when(
       is.na(F1HOSP) | is.na(cvd_fu) ~ NA_real_,
