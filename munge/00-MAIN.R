@@ -7,14 +7,14 @@ source(here::here("setup/setup.R"))
 source(here("munge/01-load-data.R"))
 source(here("munge/02-fix-vars.R"))
 
-# write.xlsx(esclab, "./data/meta-data/metavars_tmp.xlsx")
+#write.xlsx(esclab, "./data/meta-data/metavars_tmp.xlsx")
 metaesc <- read.xlsx("./data/meta-data/metavars.xlsx")
 
 # Cache/save data ---------------------------------------------------------
 
 # Version number
 
-version <- "004"
+version <- "005"
 
 dir.create(paste0("./data/clean-data/v", version))
 

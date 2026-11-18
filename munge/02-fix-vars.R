@@ -81,6 +81,7 @@ escdata <- escdata %>%
     startdtm = coalesce(DCDISCHDTD1, BASEDT, DMENROLDTD1),
     enddtm = pmin(F1DEATHDTD1, F1CONTDTD1, na.rm = T),
     time_death_fu = as.numeric(enddtm - startdtm),
+    time_death_fu = if_else(time_death_fu <= 0 & DCVITAL == "Alive", 1, time_death_fu), 
     death_inhosp = ynfac(case_when(
       is.na(DMVTYPE) | DMVTYPE == "CHF" ~ NA_real_,
       DCVITAL == "Dead" ~ 1,
